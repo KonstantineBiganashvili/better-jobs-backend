@@ -1,0 +1,67 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas  = ["better_jobs"]
+}
+
+model Job {
+  id            String   @id @default(uuid())
+  external_id   Int      @unique
+  title         String
+  company       String
+  company_img_url String
+  type          String
+  location      String
+  category      String
+  type_id       Int?
+  location_id   Int?
+  category_id   Int?
+  published_at  DateTime
+  deadline_at   DateTime
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  type_relation     JobType?   @relation(fields: [type_id], references: [id])
+  location_relation Location?  @relation(fields: [location_id], references: [id])
+  category_relation Category?  @relation(fields: [category_id], references: [id])
+
+  @@schema("better_jobs")
+  @@map("jobs")
+}
+
+model JobType {
+  id    Int    @id
+  name  String
+  value Int
+  jobs  Job[]
+
+  @@schema("better_jobs")
+  @@map("types")
+}
+
+model Location {
+  id    Int    @id
+  name  String
+  value Int
+  jobs  Job[]
+
+  @@schema("better_jobs")
+  @@map("locations")
+}
+
+model Category {
+  id    Int    @id
+  name  String
+  value Int
+  jobs  Job[]
+
+  @@schema("better_jobs")
+  @@map("categories")
+}
